@@ -3,396 +3,448 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checklist de Trading con Registro</title>
+    <title>Trading Journal 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
-
-        :root {
-            --bg-color: #1a1a1a;
-            --text-color: #00ff41;
-            --highlight-color: #ff9900;
-            --border-color: #333333;
-            --progress-bar-bg: #333;
-            --progress-bar-fill: #00ff41;
-            --button-execute-bg: #007bff;
+        /* Custom Scrollbar for "Trader" feel */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
         }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'VT323', monospace;
-            font-size: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-            background-image: linear-gradient(
-                rgba(0, 0, 0, 0.5) 50%,
-                rgba(0, 0, 0, 0) 50%
-            );
-            background-size: 100% 4px;
-            animation: flicker 0.15s infinite;
+        ::-webkit-scrollbar-track {
+            background: #1f2937; 
         }
-
-        @keyframes flicker {
-            0% { opacity: 1; }
-            50% { opacity: 0.95; }
-            100% { opacity: 1; }
+        ::-webkit-scrollbar-thumb {
+            background: #4b5563; 
+            border-radius: 4px;
         }
-
-        .container {
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280; 
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
             width: 100%;
-            max-width: 800px;
-            background-color: #0d0d0d;
-            border: 2px solid var(--text-color);
-            box-shadow: 0 0 15px var(--text-color), inset 0 0 10px rgba(0, 255, 65, 0.3);
-            padding: 25px;
-            border-radius: 8px;
         }
-
-        h1, h2, h3 {
-            font-family: 'Press Start 2P', cursive;
-            text-shadow: 0 0 5px var(--text-color);
-            text-transform: uppercase;
-        }
-
-        h1 {
-            text-align: center;
-            font-size: 24px;
-            margin-bottom: 30px;
-            color: var(--highlight-color);
-        }
-
-        .rules-section, .log-section {
-            margin-bottom: 25px;
-            border: 1px dashed var(--border-color);
-            padding: 15px;
-            border-radius: 4px;
-        }
-
-        .rules-section h2, .log-section h2 {
-            font-size: 18px;
-            margin-top: 0;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--text-color);
-            padding-bottom: 5px;
-        }
-
-        .rule {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding: 10px;
-            background-color: #222;
-            border-left: 4px solid var(--highlight-color);
-        }
-        
-        .rule p {
-            margin: 0;
-            flex-grow: 1;
-            padding-right: 15px;
-        }
-
-        .options {
-            display: flex;
-            gap: 10px;
-        }
-
-        .options label {
-            cursor: pointer;
-            padding: 5px 15px;
-            border: 1px solid var(--text-color);
-            border-radius: 4px;
-            transition: all 0.2s ease;
-        }
-
-        .options input[type="radio"] {
-            display: none;
-        }
-
-        .options input[type="radio"]:checked + label {
-            background-color: var(--text-color);
-            color: var(--bg-color);
-            box-shadow: 0 0 10px var(--text-color);
-        }
-
-        .progress-section {
-            margin-top: 30px;
-            text-align: center;
-        }
-        
-        .progress-section h3 {
-             font-family: 'Press Start 2P', cursive;
-             font-size: 16px;
-             margin-bottom: 15px;
-        }
-
-        .progress-bar-container {
-            width: 100%;
-            height: 30px;
-            background-color: var(--progress-bar-bg);
-            border: 2px solid var(--text-color);
-            border-radius: 4px;
-            padding: 3px;
-            box-sizing: border-box;
-        }
-
-        #progressBar {
-            width: 0%;
-            height: 100%;
-            background-color: var(--progress-bar-fill);
-            border-radius: 2px;
-            transition: width 0.5s ease-in-out;
-            box-shadow: 0 0 10px var(--progress-bar-fill);
-        }
-
-        #progressText {
-            margin-top: 10px;
-            font-size: 22px;
-            font-weight: bold;
-        }
-
-        .execute-section {
-            text-align: center;
-            margin: 30px 0;
-        }
-
-        #executeTradeBtn {
-            font-family: 'Press Start 2P', cursive;
-            font-size: 16px;
-            padding: 12px 24px;
-            background-color: var(--button-execute-bg);
-            color: #fff;
-            border: 2px solid #fff;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-shadow: 0 0 5px #000;
-        }
-
-        #executeTradeBtn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px var(--button-execute-bg);
-        }
-
-        .log-entry {
-            background-color: #222;
-            border: 1px solid var(--border-color);
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 4px;
-        }
-
-        .log-timestamp {
-            font-weight: bold;
-            color: var(--highlight-color);
-            margin: 0 0 10px 0;
-        }
-
-        .log-details ul {
-            list-style-type: '>> ';
-            padding-left: 20px;
-            margin: 0;
-        }
-
-        .log-details li {
-            padding-left: 10px;
-        }
-
     </style>
 </head>
-<body>
+<body class="bg-gray-900 text-gray-200 font-sans antialiased min-h-screen flex flex-col">
 
-    <div class="container">
-        <h1>REGLAS DE ORO</h1>
+    <!-- Header -->
+    <header class="bg-gray-800 border-b border-gray-700 p-4 sticky top-0 z-20 shadow-lg">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-chart-line text-blue-500 text-2xl"></i>
+                <h1 class="text-xl font-bold text-white tracking-wide">TRADING JOURNAL <span class="text-blue-500">2026</span></h1>
+            </div>
+            
+            <!-- Global Inputs -->
+            <div class="flex items-center gap-4 bg-gray-900 p-2 rounded-lg border border-gray-700">
+                <label class="text-sm text-gray-400 font-medium">Capital Inicial (€):</label>
+                <input type="number" id="initialCapital" value="10000" 
+                       class="bg-gray-800 text-white font-bold border border-gray-600 rounded px-2 py-1 w-32 text-right focus:outline-none focus:border-blue-500 transition-colors"
+                       onchange="updateData()">
+            </div>
+        </div>
+    </header>
 
-        <!-- Sección de reglas principales -->
-        <div class="rules-section">
-            <h2>CONFIRMACIONES PRINCIPALES</h2>
-            <div class="rule">
-                <p>[TF_1H] - Esperar señal de confirmación ADX</p>
-                <div class="options">
-                    <input type="radio" id="rule1_si" name="rule1" value="si"><label for="rule1_si">SÍ</label>
-                    <input type="radio" id="rule1_no" name="rule1" value="no" checked><label for="rule1_no">NO</label>
-                </div>
-            </div>
-            <div class="rule">
-                <p>[TF_1H] - ¿Precio se encuentra en zona de interés?</p>
-                <div class="options">
-                    <input type="radio" id="rule2_si" name="rule2" value="si"><label for="rule2_si">SÍ</label>
-                    <input type="radio" id="rule2_no" name="rule2" value="no" checked><label for="rule2_no">NO</label>
-                </div>
-            </div>
-            <div class="rule">
-                <p>[TF_1H] - BBWP - ¿Subiendo la zona el 33% o viene de retroceso?</p>
-                <div class="options">
-                    <input type="radio" id="rule3_si" name="rule3" value="si"><label for="rule3_si">SÍ</label>
-                    <input type="radio" id="rule3_no" name="rule3" value="no" checked><label for="rule3_no">NO</label>
-                </div>
-            </div>
-            <div class="rule">
-                <p>[TF_1H] - Strategy - ¿Ha cerrado la vela actual cambiando de color?</p>
-                <div class="options">
-                    <input type="radio" id="rule4_si" name="rule4" value="si"><label for="rule4_si">SÍ</label>
-                    <input type="radio" id="rule4_no" name="rule4" value="no" checked><label for="rule4_no">NO</label>
-                </div>
-            </div>
-            <div class="rule">
-                <p>[TF_1H] - Strategy - ¿Hay rotura de estructura o se ha creado?</p>
-                <div class="options">
-                    <input type="radio" id="rule5_si" name="rule5" value="si"><label for="rule5_si">SÍ</label>
-                    <input type="radio" id="rule5_no" name="rule5" value="no" checked><label for="rule5_no">NO</label>
-                </div>
-            </div>
-            <div class="rule">
-                <p>[TF_1H] - Konkorde - ¿Está dentro del área de volumen?</p>
-                <div class="options">
-                    <input type="radio" id="rule6_si" name="rule6" value="si"><label for="rule6_si">SÍ</label>
-                    <input type="radio" id="rule6_no" name="rule6" value="no" checked><label for="rule6_no">NO</label>
+    <main class="flex-grow p-4 max-w-7xl mx-auto w-full space-y-6">
+
+        <!-- Custom Modal for Reset Confirmation -->
+        <div id="resetModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden backdrop-blur-sm">
+            <div class="bg-gray-800 p-6 rounded-lg shadow-2xl border border-gray-700 max-w-sm w-full transform transition-all scale-100">
+                <h3 class="text-xl font-bold text-white mb-2"><i class="fa-solid fa-triangle-exclamation text-yellow-500 mr-2"></i>¿Borrar datos?</h3>
+                <p class="text-gray-400 mb-6 text-sm">Se eliminarán todos los beneficios y pérdidas registrados. Esta acción no se puede deshacer.</p>
+                <div class="flex justify-end gap-3">
+                    <button onclick="closeResetModal()" class="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 rounded transition-colors">Cancelar</button>
+                    <button onclick="confirmReset()" class="px-4 py-2 text-sm font-bold bg-red-600 hover:bg-red-700 text-white rounded shadow-lg transition-colors">Sí, Borrar Todo</button>
                 </div>
             </div>
         </div>
 
-        <!-- Sección de reglas secundarias -->
-        <div class="rules-section">
-            <h2>CONFIRMACIONES SECUNDARIAS</h2>
-            <div class="rule">
-                <p>[TF_4H] - ¿Estocástico se encuentra en zona de sobrecompra o sobreventa?</p>
-                <div class="options">
-                    <input type="radio" id="rule7_si" name="rule7" value="si"><label for="rule7_si">SÍ</label>
-                    <input type="radio" id="rule7_no" name="rule7" value="no" checked><label for="rule7_no">NO</label>
-                </div>
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <!-- Current Equity -->
+            <div class="bg-gray-800 rounded-lg p-4 border border-gray-700 shadow-md">
+                <div class="text-gray-400 text-xs uppercase font-bold tracking-wider mb-1">Equity Actual</div>
+                <div class="text-2xl font-bold text-white" id="kpiEquity">10,000.00 €</div>
+                <div class="text-xs text-gray-500 mt-1">Saldo total de la cuenta</div>
             </div>
-            <div class="rule">
-                <p>[TF_4H] - ¿ADX está con impulso?</p>
-                <div class="options">
-                    <input type="radio" id="rule8_si" name="rule8" value="si"><label for="rule8_si">SÍ</label>
-                    <input type="radio" id="rule8_no" name="rule8" value="no" checked><label for="rule8_no">NO</label>
-                </div>
+            
+            <!-- Net Profit -->
+            <div class="bg-gray-800 rounded-lg p-4 border border-gray-700 shadow-md">
+                <div class="text-gray-400 text-xs uppercase font-bold tracking-wider mb-1">Profit Neto</div>
+                <div class="text-2xl font-bold text-gray-300" id="kpiNetProfit">0.00 €</div>
+                <div class="text-xs text-gray-500 mt-1">Ganancia/Pérdida acumulada</div>
+            </div>
+
+            <!-- Max Drawdown -->
+            <div class="bg-gray-800 rounded-lg p-4 border border-gray-700 shadow-md">
+                <div class="text-gray-400 text-xs uppercase font-bold tracking-wider mb-1">Max Drawdown</div>
+                <div class="text-2xl font-bold text-red-400" id="kpiDD">0.00 €</div>
+                <div class="text-xs text-gray-500 mt-1">Peor caída desde máximo</div>
+            </div>
+
+            <!-- Win Rate -->
+            <div class="bg-gray-800 rounded-lg p-4 border border-gray-700 shadow-md">
+                <div class="text-gray-400 text-xs uppercase font-bold tracking-wider mb-1">Win Rate</div>
+                <div class="text-2xl font-bold text-blue-400" id="kpiWinRate">0.0%</div>
+                <div class="text-xs text-gray-500 mt-1">% Semanas Positivas</div>
             </div>
         </div>
 
-        <!-- Sección de progreso y ejecución -->
-        <div class="progress-section">
-            <h3>NIVEL DE CONFIRMACIÓN</h3>
-            <div class="progress-bar-container">
-                <div id="progressBar"></div>
+        <!-- Main Layout: Charts & Table -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Left Column: Data Table -->
+            <div class="lg:col-span-1 bg-gray-800 rounded-lg border border-gray-700 flex flex-col h-[800px] shadow-lg">
+                <div class="p-3 border-b border-gray-700 bg-gray-800 rounded-t-lg sticky top-0 z-10 flex justify-between items-center">
+                    <h2 class="font-bold text-gray-200"><i class="fa-solid fa-table me-2"></i>Registro Semanal</h2>
+                    <button onclick="resetData()" class="text-xs text-red-400 hover:text-red-300 transition focus:outline-none"><i class="fa-solid fa-trash me-1"></i>Reset</button>
+                </div>
+                
+                <div class="overflow-auto flex-grow relative">
+                    <table class="w-full text-sm text-left">
+                        <thead class="text-xs text-gray-400 uppercase bg-gray-900 sticky top-0 z-10">
+                            <tr>
+                                <th class="px-3 py-3 w-16 text-center">Sem</th>
+                                <th class="px-3 py-3">Fecha</th>
+                                <th class="px-3 py-3 text-right">Profit (€)</th>
+                                <th class="px-3 py-3 text-right text-gray-500">DD (€)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody" class="divide-y divide-gray-700">
+                            <!-- Rows generated by JS -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <p id="progressText">0%</p>
-        </div>
-        <div class="execute-section">
-            <button id="executeTradeBtn">Ejecutar Trade</button>
+
+            <!-- Right Column: Charts -->
+            <div class="lg:col-span-2 space-y-6">
+                
+                <!-- Chart 1: Equity Curve -->
+                <div class="bg-gray-800 rounded-lg border border-gray-700 p-4 shadow-lg">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="font-bold text-gray-200"><i class="fa-solid fa-arrow-trend-up me-2 text-blue-500"></i>Curva de Capital (Equity)</h2>
+                        <span class="text-xs text-gray-500">Actualizado en tiempo real</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="equityChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart 2: Weekly Profit -->
+                <div class="bg-gray-800 rounded-lg border border-gray-700 p-4 shadow-lg">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="font-bold text-gray-200"><i class="fa-solid fa-chart-bar me-2 text-green-500"></i>Profit Semanal</h2>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="profitChart"></canvas>
+                    </div>
+                </div>
+
+            </div>
         </div>
 
-        <!-- Sección de registro de trades -->
-        <div class="log-section">
-            <h2>REGISTRO DE TRADES</h2>
-            <div id="tradeLog">
-                <!-- Las entradas del registro se añadirán aquí dinámicamente -->
-            </div>
-        </div>
-    </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center p-4 text-xs text-gray-600">
+        Generated by Google Gemini | Trading Journal V2
+    </footer>
 
     <script>
-        // --- ELEMENTOS DEL DOM ---
-        const mainRules = document.querySelectorAll('.rules-section:first-of-type input[type="radio"]');
-        const progressBar = document.getElementById('progressBar');
-        const progressText = document.getElementById('progressText');
-        const executeTradeBtn = document.getElementById('executeTradeBtn');
-        const tradeLog = document.getElementById('tradeLog');
+        // --- 1. Data Initialization ---
+        const startDate = new Date('2025-12-29');
+        const weeks = [];
+        const totalWeeks = 53;
 
-        // --- CONSTANTES ---
-        const TOTAL_RULES = 6;
+        for (let i = 0; i < totalWeeks; i++) {
+            let start = new Date(startDate);
+            start.setDate(startDate.getDate() + (i * 7));
+            let end = new Date(start);
+            end.setDate(start.getDate() + 6);
 
-        // --- FUNCIONES ---
-
-        // Actualiza la barra de progreso y su color
-        function updateProgress() {
-            let yesCount = 0;
-            for (let i = 0; i < TOTAL_RULES; i++) {
-                const yesInput = document.getElementById(`rule${i + 1}_si`);
-                if (yesInput && yesInput.checked) {
-                    yesCount++;
-                }
-            }
-            
-            const percentage = (yesCount / TOTAL_RULES) * 100;
-            
-            progressBar.style.width = `${percentage}%`;
-            progressText.textContent = `${Math.round(percentage)}%`;
-
-            // --- LÓGICA DE COLOR CORREGIDA ---
-            // Se basa en el número de respuestas "SÍ" para evitar errores de redondeo.
-            // 4 de 6 confirmaciones (67%) ya se considera verde.
-            if (yesCount < 3) { // Menos de 50%
-                progressBar.style.backgroundColor = 'var(--highlight-color)'; // Naranja
-            } else if (yesCount < 4) { // 3 de 6 (50%)
-                progressBar.style.backgroundColor = '#ffff00'; // Amarillo
-            } else { // 4 de 6 (67%) o más
-                progressBar.style.backgroundColor = 'var(--progress-bar-fill)'; // Verde
-            }
+            weeks.push({
+                id: i,
+                label: `Semana ${i}`,
+                start: start.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' }),
+                end: end.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' }),
+                profit: null, // User input
+                equity: 0,
+                drawdown: 0
+            });
         }
 
-        // Registra un nuevo trade
-        function executeTrade() {
-            // 1. Obtener la fecha y hora actual
-            const now = new Date();
-            const timestamp = now.toLocaleString('es-ES', { 
-                day: '2-digit', 
-                month: '2-digit', 
-                year: 'numeric', 
-                hour: '2-digit', 
-                minute: '2-digit', 
-                second: '2-digit' 
-            });
+        // --- 2. Chart.js Setup ---
+        let equityChartInstance = null;
+        let profitChartInstance = null;
 
-            // 2. Obtener las reglas confirmadas
-            const confirmedRules = [];
-            document.querySelectorAll('.rule').forEach((ruleElement, index) => {
-                const yesInput = ruleElement.querySelector(`input[id="rule${index + 1}_si"]`);
-                 if (yesInput && yesInput.checked) {
-                    const ruleText = ruleElement.querySelector('p').textContent;
-                    confirmedRules.push(ruleText);
+        function initCharts() {
+            // Equity Line Chart
+            const ctxEquity = document.getElementById('equityChart').getContext('2d');
+            equityChartInstance = new Chart(ctxEquity, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Equity (€)',
+                        data: [],
+                        borderColor: '#3b82f6', // Blue-500
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.1,
+                        pointRadius: 3,
+                        pointBackgroundColor: '#1d4ed8',
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { 
+                            grid: { color: '#374151' },
+                            ticks: { color: '#9ca3af', maxTicksLimit: 10 } 
+                        },
+                        y: { 
+                            grid: { color: '#374151' },
+                            ticks: { color: '#9ca3af' } 
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: '#111827',
+                            titleColor: '#f3f4f6',
+                            bodyColor: '#d1d5db',
+                            borderColor: '#374151',
+                            borderWidth: 1
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
                 }
             });
 
-            // 3. Crear el elemento del registro en el DOM
-            const logEntry = document.createElement('div');
-            logEntry.className = 'log-entry';
-
-            const confirmationsList = confirmedRules.length > 0
-                ? `<ul>${confirmedRules.map(rule => `<li>${rule}</li>`).join('')}</ul>`
-                : '<p>Ninguna confirmación validada.</p>';
-
-            logEntry.innerHTML = `
-                <p class="log-timestamp">Ejecutado: ${timestamp}</p>
-                <div class="log-details">
-                    <strong>Confirmaciones Validadas:</strong>
-                    ${confirmationsList}
-                </div>
-            `;
-
-            // 4. Añadir el nuevo registro al principio del log
-            tradeLog.prepend(logEntry);
+            // Profit Bar Chart
+            const ctxProfit = document.getElementById('profitChart').getContext('2d');
+            profitChartInstance = new Chart(ctxProfit, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Profit (€)',
+                        data: [],
+                        backgroundColor: [], // Dynamic colors
+                        borderWidth: 0,
+                        borderRadius: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { 
+                            grid: { display: false },
+                            ticks: { color: '#9ca3af', maxTicksLimit: 10 } 
+                        },
+                        y: { 
+                            grid: { color: '#374151' },
+                            ticks: { color: '#9ca3af' } 
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
         }
 
-        // --- EVENT LISTENERS ---
+        // --- 3. Logic & Rendering ---
 
-        // Actualizar progreso al cambiar una regla
-        mainRules.forEach(rule => {
-            rule.addEventListener('change', updateProgress);
-        });
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
 
-        // Ejecutar trade al hacer clic en el botón
-        executeTradeBtn.addEventListener('click', executeTrade);
+            weeks.forEach((week, index) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-800 transition-colors";
+                
+                const ddClass = week.drawdown < 0 ? 'text-red-400' : 'text-gray-500';
 
-        // Inicializar la barra de progreso al cargar la página
-        document.addEventListener('DOMContentLoaded', updateProgress);
+                tr.innerHTML = `
+                    <td class="px-3 py-2 text-center text-gray-500 font-mono text-xs">${week.id}</td>
+                    <td class="px-3 py-2 text-xs text-gray-400">
+                        <div class="font-medium text-gray-300">${week.start}</div>
+                        <div class="text-[10px] opacity-70">al ${week.end}</div>
+                    </td>
+                    <td class="px-3 py-2">
+                        <input type="number" 
+                            class="profit-input w-full bg-gray-900 border border-gray-700 rounded px-2 py-1 text-right text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder-gray-700"
+                            placeholder="-"
+                            value="${week.profit !== null ? week.profit : ''}"
+                            onchange="handleProfitChange(${index}, this.value)"
+                        >
+                    </td>
+                    <td class="px-3 py-2 text-right text-xs font-mono ${ddClass}">
+                        ${week.drawdown !== 0 ? formatCurrency(week.drawdown) : '-'}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            updateInputColors();
+        }
+
+        function handleProfitChange(index, value) {
+            if (value === '') {
+                weeks[index].profit = null;
+            } else {
+                weeks[index].profit = parseFloat(value);
+            }
+            updateData();
+        }
+
+        function updateInputColors() {
+            const inputs = document.querySelectorAll('.profit-input');
+            inputs.forEach(input => {
+                const val = parseFloat(input.value);
+                input.classList.remove('text-green-400', 'text-red-400', 'text-gray-300');
+                
+                if (input.value === '') {
+                    input.classList.add('text-gray-300');
+                } else if (val > 0) {
+                    input.classList.add('text-green-400', 'font-bold');
+                } else if (val < 0) {
+                    input.classList.add('text-red-400', 'font-bold');
+                } else {
+                    input.classList.add('text-gray-300');
+                }
+            });
+        }
+
+        function updateData() {
+            const initialCapital = parseFloat(document.getElementById('initialCapital').value) || 0;
+            let currentEquity = initialCapital;
+            let maxEquity = initialCapital;
+            let totalProfit = 0;
+            let positiveWeeks = 0;
+            let weeksWithData = 0;
+            let maxDD = 0;
+
+            weeks.forEach(week => {
+                if (week.profit !== null) {
+                    weeksWithData++;
+                    totalProfit += week.profit;
+                    currentEquity += week.profit;
+                    
+                    if (week.profit > 0) positiveWeeks++;
+                    
+                    if (currentEquity > maxEquity) {
+                        maxEquity = currentEquity;
+                    }
+                    
+                    week.drawdown = currentEquity - maxEquity;
+                    if (week.drawdown < maxDD) {
+                        maxDD = week.drawdown;
+                    }
+                    
+                    week.equity = currentEquity;
+                } else {
+                    week.equity = currentEquity;
+                    week.drawdown = currentEquity - maxEquity;
+                }
+            });
+
+            // Update KPIs
+            document.getElementById('kpiEquity').innerText = formatCurrency(currentEquity);
+            document.getElementById('kpiNetProfit').innerText = formatCurrency(totalProfit);
+            
+            const profitEl = document.getElementById('kpiNetProfit');
+            profitEl.className = `text-2xl font-bold ${totalProfit >= 0 ? 'text-green-400' : 'text-red-400'}`;
+            
+            document.getElementById('kpiDD').innerText = formatCurrency(maxDD);
+            
+            const winRate = weeksWithData > 0 ? (positiveWeeks / weeksWithData) * 100 : 0;
+            document.getElementById('kpiWinRate').innerText = winRate.toFixed(1) + '%';
+
+            updateCharts();
+            refreshDDCells();
+            updateInputColors();
+        }
+        
+        function refreshDDCells() {
+            const tbody = document.getElementById('tableBody');
+            Array.from(tbody.children).forEach((tr, idx) => {
+                const ddCell = tr.lastElementChild;
+                const week = weeks[idx];
+                const ddClass = week.drawdown < -0.01 ? 'text-red-400' : 'text-gray-500';
+                
+                ddCell.className = `px-3 py-2 text-right text-xs font-mono ${ddClass}`;
+                ddCell.innerText = week.drawdown !== 0 ? formatCurrency(week.drawdown) : '-';
+            });
+        }
+
+        function updateCharts() {
+            let lastFilledIndex = -1;
+            weeks.forEach((w, i) => { if(w.profit !== null) lastFilledIndex = i; });
+            
+            const cutOff = Math.max(lastFilledIndex, 4); 
+            const activeWeeks = weeks.slice(0, cutOff + 1);
+
+            const labels = activeWeeks.map(w => w.label);
+            const equityData = activeWeeks.map(w => w.equity);
+            
+            const profitData = activeWeeks.map(w => w.profit !== null ? w.profit : 0);
+            const profitColors = profitData.map(p => p >= 0 ? '#4ade80' : '#f87171'); 
+
+            equityChartInstance.data.labels = labels;
+            equityChartInstance.data.datasets[0].data = equityData;
+            equityChartInstance.update();
+
+            profitChartInstance.data.labels = labels;
+            profitChartInstance.data.datasets[0].data = profitData;
+            profitChartInstance.data.datasets[0].backgroundColor = profitColors;
+            profitChartInstance.update();
+        }
+
+        function formatCurrency(num) {
+            return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(num);
+        }
+        
+        // --- Modal Logic Replaces Confirm ---
+        function resetData() {
+            document.getElementById('resetModal').classList.remove('hidden');
+        }
+
+        function closeResetModal() {
+            document.getElementById('resetModal').classList.add('hidden');
+        }
+
+        function confirmReset() {
+            weeks.forEach(w => w.profit = null);
+            const inputs = document.querySelectorAll('.profit-input');
+            inputs.forEach(i => i.value = '');
+            updateData();
+            closeResetModal();
+        }
+
+        window.onload = function() {
+            renderTable(); 
+            initCharts();
+            updateData();
+        };
+
     </script>
-
 </body>
 </html>
